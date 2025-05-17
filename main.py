@@ -199,4 +199,50 @@ def vote_bot(firstname, lastname, birth_year, gender, country, email, use_undete
 
 # 使用範例
 if __name__ == "__main__":
-    vote_bot("Yi", "Zheng", 2000, "female", "Taiwan", "g8pupuqqq@gmail.com")
+    # 從 random_voters.py 導入隨機資料生成功能
+    from random_voters import run_multiple_votes_data
+    import time
+    
+    # 生成10筆隨機資料
+    random_profiles = run_multiple_votes_data(10)
+    
+    print("已生成10筆隨機資料，開始執行投票...")
+    
+    successful_votes = 0
+    failed_votes = 0
+    
+    # 逐個執行投票
+    for i, profile in enumerate(random_profiles):
+        try:
+            print(f"\n第 {i+1} 次投票開始")
+            print(f"使用資料: {profile}")
+            
+            # 執行投票
+            vote_bot(
+                firstname=profile["firstname"],
+                lastname=profile["lastname"],
+                birth_year=profile["birth_year"],
+                gender=profile["gender"],
+                country=profile["country"],
+                email=profile["email"],
+                use_undetected=True
+            )
+            
+            successful_votes += 1
+            print(f"第 {i+1} 次投票完成")
+            
+            # 如果還有下一次投票，則等待隨機時間（30-120秒）
+            if i < len(random_profiles) - 1:
+                wait_time = random.randint(30, 120)
+                print(f"等待 {wait_time} 秒後進行下一次投票...")
+                time.sleep(wait_time)
+                
+        except Exception as e:
+            failed_votes += 1
+            print(f"第 {i+1} 次投票失敗: {e}")
+    
+    # 輸出統計結果
+    print("\n投票結束統計")
+    print(f"成功投票次數: {successful_votes}")
+    print(f"失敗投票次數: {failed_votes}")
+    print(f"成功率: {successful_votes/len(random_profiles)*100:.2f}%")
